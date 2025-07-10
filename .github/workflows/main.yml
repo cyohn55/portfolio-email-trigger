@@ -32,7 +32,6 @@ jobs:
         else
           echo "❌ Failed to trigger workflow. HTTP Code: $http_code"
           echo "🔍 Response: $response"
-          echo "🎯 Check token permissions and repository access"
           exit 1
         fi
         
