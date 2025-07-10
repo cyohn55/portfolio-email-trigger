@@ -2,7 +2,7 @@ name: Portfolio Email Trigger
 
 on:
   schedule:
-    # Every 3 minutes (more reliable than every 2)
+    # Every 3 minutes - reliable external trigger
     - cron: '*/3 * * * *'
   workflow_dispatch: # Allow manual triggering
 
@@ -23,14 +23,12 @@ jobs:
           https://api.github.com/repos/cyohn55/Portfolio/actions/workflows/email-to-portfolio.yml/dispatches \
           -d '{"ref":"main"}')
         
-        http_code="${response: -3}"
-        
-        if [[ "$http_code" == "204" ]]; then
+        if [[ "$response" == *"204"* ]]; then
           echo "✅ Successfully triggered portfolio workflow"
           echo "📧 Portfolio email processing should start within 30 seconds"
           echo "🌐 Check status: https://github.com/cyohn55/Portfolio/actions"
         else
-          echo "❌ Failed to trigger workflow. HTTP Code: $http_code"
+          echo "❌ Failed to trigger workflow. HTTP Code: ${response: -3}"
           echo "🔍 Response: $response"
           exit 1
         fi
