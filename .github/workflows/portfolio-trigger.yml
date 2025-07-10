@@ -1,0 +1,33 @@
+name: Portfolio Email Trigger
+
+on:
+  schedule:
+    # Every 3 minutes (more reliable than every 2)
+    - cron: '*/3 * * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  trigger-portfolio:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Trigger Portfolio Email Processing
+      run: |
+        echo "🚀 Triggering portfolio email processing..."
+        echo "⏰ Trigger time: $(date)"
+        
+        response=$(curl -s -w "%{http_code}" -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token ${{ secrets.PORTFOLIO_TRIGGER_TOKEN }}" \
+          https://api.github.com/repos/cyohn55/Portfolio/actions/workflows/email-to-portfolio.yml/dispatches \
+          -d '{"ref":"main"}')
+        
+        if [[ "$response" == *"204"* ]]; then
+          echo "✅ Successfully triggered portfolio workflow"
+        else
+          echo "❌ Failed to trigger workflow. Response: $response"
+          exit 1
+        fi
+        
+        echo "📧 Portfolio email processing should start within 30 seconds"
+        echo "🌐 Check status: https://github.com/cyohn55/Portfolio/actions"
